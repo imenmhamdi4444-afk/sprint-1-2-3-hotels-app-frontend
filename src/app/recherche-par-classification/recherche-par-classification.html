@@ -1,0 +1,62 @@
+<div class="container mt-4">
+  <!-- Zone de sélection (recherche automatique) -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <label for="idCat" class="form-label fw-bold">Classification :</label>
+      <select
+        class="form-select form-select-lg"
+        id="idCat"
+        name="idCat"
+        [(ngModel)]="idclassification"
+        (ngModelChange)="onSearch()">
+        <option [ngValue]="null" disabled selected>-- Choisir une classification --</option>
+        <option *ngFor="let cat of classifications" [ngValue]="cat.idClass">
+          {{ cat.nomClass }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tableau des résultats -->
+  <div class="card shadow">
+    <div class="card-body">
+      <table class="table table-striped table-hover text-center align-middle" *ngIf="hotels.length > 0; else noHotels">
+        <thead class="table-dark">
+          <tr>
+            <th>N°</th>
+            <th>Nom</th>
+            <th>Ville</th>
+            <th>Étoiles</th>
+            <th>Prix / Nuit (TND)</th>
+            <th>Classification</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let hotel of hotels; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ hotel.nomhotel }}</td>
+            <td>{{ hotel.ville }}</td>
+            <td>{{ hotel.etoiles }}</td>
+            <td>{{ hotel.prixnuit | number: '1.2-2' }}</td>
+            <td>{{ hotel.classification?.nomClass }}</td>
+            <td>
+              <button class="btn btn-danger btn-sm me-1" (click)="supprimerhotel(hotel)">
+                🗑 Supprimer
+              </button>
+              <a class="btn btn-success btn-sm" [routerLink]="['/updatehotel', hotel.idhotel]">
+                ✏ Modifier
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Message si aucun hôtel trouvé -->
+      <ng-template #noHotels>
+        <p class="text-center text-danger fw-bold mt-3">Aucun hôtel trouvé !</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

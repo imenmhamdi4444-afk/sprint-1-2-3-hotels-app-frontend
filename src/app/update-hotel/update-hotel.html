@@ -1,0 +1,145 @@
+<div class="container mt-5">
+  <div class="row justify-content-md-center">
+    <div class="col-md-8">
+      <h2 class="text-center mb-4">Modifier un Hôtel :</h2>
+
+      <form [formGroup]="hotelForm">
+        <!-- Hotel ID -->
+        <div class="form-group mb-3">
+          <label>ID Hôtel :</label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="idhotel"
+            readonly
+          />
+        </div>
+
+        <!-- Hotel Name -->
+        <div class="form-group mb-3">
+          <label>Nom de l'hôtel :</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="nomhotel"
+          />
+        </div>
+        @if (hotelForm.controls['nomhotel'].touched && hotelForm.controls['nomhotel'].invalid) {
+          @if (hotelForm.controls['nomhotel'].hasError('required')) {
+            <span class="text-danger">Le nom de l'hôtel est obligatoire.</span>
+          }
+          @if (hotelForm.controls['nomhotel'].hasError('minlength')) {
+            <span class="text-danger">Le nom doit comporter au moins 2 caractères.</span>
+          }
+          @if (hotelForm.controls['nomhotel'].hasError('maxlength')) {
+            <span class="text-danger">Le nom ne doit pas dépasser 20 caractères.</span>
+          }
+        }
+
+        <!-- Price per night -->
+        <div class="form-group mb-3">
+          <label>Prix par nuit :</label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="prixnuit"
+          />
+        </div>
+        @if (hotelForm.controls['prixnuit'].touched && hotelForm.controls['prixnuit'].invalid) {
+          @if (hotelForm.controls['prixnuit'].hasError('required')) {
+            <span class="text-danger">Le prix par nuit est obligatoire.</span>
+          }
+          @if (hotelForm.controls['prixnuit'].hasError('min') || hotelForm.controls['prixnuit'].hasError('max')) {
+            <span class="text-danger">Le prix doit être entre 10 et 2000.</span>
+          }
+        }
+
+        <!-- Stars -->
+        <div class="form-group mb-3">
+          <label>Étoiles :</label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="etoiles"
+          />
+        </div>
+        @if (hotelForm.controls['etoiles'].touched && hotelForm.controls['etoiles'].invalid) {
+          @if (hotelForm.controls['etoiles'].hasError('required')) {
+            <span class="text-danger">Le nombre d'étoiles est obligatoire.</span>
+          }
+          @if (hotelForm.controls['etoiles'].hasError('min') || hotelForm.controls['etoiles'].hasError('max')) {
+            <span class="text-danger">Les étoiles doivent être entre 1 et 5.</span>
+          }
+        }
+
+        <!-- City -->
+        <div class="form-group mb-3">
+          <label>Ville :</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="ville"
+          />
+        </div>
+        @if (hotelForm.controls['ville'].touched && hotelForm.controls['ville'].invalid) {
+          @if (hotelForm.controls['ville'].hasError('required')) {
+            <span class="text-danger">La ville est obligatoire.</span>
+          }
+          @if (hotelForm.controls['ville'].hasError('minlength')) {
+            <span class="text-danger">La ville doit comporter au moins 2 caractères.</span>
+          }
+          @if (hotelForm.controls['ville'].hasError('maxlength')) {
+            <span class="text-danger">La ville ne doit pas dépasser 20 caractères.</span>
+          }
+        }
+
+        <!-- Email -->
+        <div class="form-group mb-3">
+          <label>Email :</label>
+          <input
+            type="email"
+            class="form-control"
+            formControlName="email"
+          />
+        </div>
+        @if (hotelForm.controls['email'].touched && hotelForm.controls['email'].invalid) {
+          @if (hotelForm.controls['email'].hasError('required')) {
+            <span class="text-danger">L'email est obligatoire.</span>
+          }
+          @if (hotelForm.controls['email'].hasError('email')) {
+            <span class="text-danger">L'email n'est pas valide.</span>
+          }
+        }
+
+        <!-- Classification -->
+        <div class="form-group mb-3">
+          <label>Classification :</label>
+          <select
+            class="form-control"
+            formControlName="idClass"
+          >
+            <option value="" disabled selected>-- Sélectionner une classification --</option>
+            @for (classItem of classificationsList; track classItem.idClass) {
+              <option [value]="classItem.idClass">{{ classItem.nomClass }}</option>
+            }
+          </select>
+        </div>
+        @if (hotelForm.controls['idClass'].touched && hotelForm.controls['idClass'].hasError('required')) {
+          <span class="text-danger">La classification est obligatoire.</span>
+        }
+
+        <!-- Submit Button -->
+        <div class="text-center mt-4">
+          <button
+            type="button"
+            class="btn btn-success px-4"
+            [disabled]="hotelForm.invalid"
+            (click)="updatehotel()"
+          >
+            Modifier
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
