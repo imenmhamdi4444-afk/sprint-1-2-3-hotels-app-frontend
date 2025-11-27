@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { hotel } from '../model/hotel.model';
 import { Classification } from '../model/classification.model';
+import { Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
+};
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +17,11 @@ export class hotelService {
   private hotels: hotel[] = [];
   private classifications: Classification[] = [];
 
-  constructor() {
+apiurl:string = 'http://localhost:3000/hotels';
+apiUrlclassification :string = 'http://localhost:3000/classifications';
+ 
+
+  constructor(protected http: HttpClient) {
     // Initialisation des classifications
     this.classifications = [
       { idClass: 1, nomClass: "Luxe" },
@@ -121,9 +133,15 @@ export class hotelService {
     return [...this.hotels]; // retourne une copie
   }
 
-  // retourne la liste des classifications
+  // retourne la liste des classifications (synchrone)
   listeclassifications(): Classification[] {
- return this.classifications;  }
+    return this.classifications;
+  }
+
+  // retourne la liste des classifications comme Observable
+  listeClassifications(): Observable<Classification[]> {
+    return of(this.classifications);
+  }
 
   // ajoute un hôtel
   ajouterhotel(hot: hotel) {
@@ -175,5 +193,11 @@ export class hotelService {
     return this.hotels.filter(h => h.nomhotel?.toLowerCase().includes(keyword));
   }
 
-  
+  ajouterClassification(classification: Classification): Observable<Classification> {
+    return this.http.post<Classification>(this.apiUrlclassification, classification, httpOptions);
+  }
+
+  updateClassification(classification: Classification): Observable<Classification> {
+    return this.http.put<Classification>(`${this.apiUrlclassification}/${classification.idClass}`, classification, httpOptions);
+  }
 }

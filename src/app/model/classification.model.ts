@@ -1,4 +1,4 @@
 export class Classification{
-idClass! : number; 
+idClass! : number|null; 
 nomClass! : string;
 }

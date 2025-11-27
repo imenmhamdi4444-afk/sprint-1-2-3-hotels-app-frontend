@@ -7,6 +7,7 @@ import { Addhotel } from './add-hotel/add-hotel';
 import { Login } from './login/login';
 import { Forbidden } from './forbidden/forbidden';
 import { hotelGuard } from './hotel-guard';
+import { ListeClassifications } from './liste-classifications/liste-classifications';
 
 export const routes: Routes = [
     {path: "hotels", component : hotels},
@@ -16,6 +17,7 @@ export const routes: Routes = [
     {path: "rechercheParNom", component : RechercheParNomComponent},
     {path: "updatehotel/:id",  component: Updatehotel},
     {path:  'login', component: Login},
-    {path: 'app-forbidden', component: Forbidden}
+    {path: 'app-forbidden', component: Forbidden},
+    {path: 'liste-classifications', component: ListeClassifications},
 
 ];
