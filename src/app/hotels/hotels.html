@@ -1,47 +1,77 @@
-<div class="container">
+<div class="container mt-4">
   <div class="card shadow mb-4">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">Liste des Hôtels</h5>
+    </div>
     <div class="card-body">
-        <table class="table table-striped">
-        @if(hotels.length!=0)
-        {
+
+      @if (loadError) {
+      <div class="alert alert-danger">{{ loadError }}</div>
+      }
+
+      @if (isLoading) {
+      <div class="text-center mb-3">Chargement des hôtels...</div>
+      }
+
+      @if (!isLoading && !loadError) {
+
+      @if (hotelsList.length > 0) {
+      <table class="table table-hover">
+        <thead class="table-light">
           <tr>
             <th>N°</th>
             <th>ID</th>
-            <th>Name</th>
-            <th class="text-center pe-3">Etoiles</th>
-            <th class="ps-3">Ville</th>
-            <th class="text-end pe-3">Prix nuit</th>
-            <th class="ps-3">Email</th>
-            <th>Classification</th>
-
-
-        </tr>
-    }
-        @for (hotel of hotels; track hotel.idhotel; let index =$index; let nbr=$count;let first = $first;let last = $last) {
-            <tbody>
-              <tr>
-                <td>{{index+1}}</td>
-               
-              <td>{{ hotel.idhotel }}</td>
-              <td>{{ hotel.nomhotel }}</td>
-              <td class="text-center pe-3">{{ hotel.etoiles }}</td>
-              <td class="ps-3">{{ hotel.ville }}</td>
-              <td class="text-end pe-3">{{ hotel.prixnuit }}</td>
-              <td class="ps-3">{{ hotel.email }}</td>
-              <td>{{ hotel.classification?.nomClass }}</td>
-              @if(authService.isAdmin()) {
-                <td><a class="btn btn-danger" (click)="supprimerhotel(hotel)">Supprimer</a></td>
-                <td><a class="btn btn-success" [routerLink]="['/updatehotel',hotel.idhotel]">Modifier</a></td>
+            <th>Image</th>
+            <th>Nom Hôtel</th>
+            <th>Ville</th>
+            <th>Prix Nuit</th>
+            <th class="text-center">Etoiles</th>
+            <th>Type Hotel</th>
+            @if (authService.isAdmin()) {
+            <th class="text-center">Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (hotel of hotelsList; track hotel.idHotel; let index = $index) {
+          <tr>
+            <td>{{ index + 1 }}</td>
+            <td>{{ hotel.idHotel }}</td>
+            <td>
+              @if (hotel.imageName) {
+                <img [src]="'http://localhost:8081/api/getImage/' + hotel.imageName" height="50px" class="rounded shadow-sm">
+              } @else {
+                <small class="text-muted italic">Pas d'image</small>
               }
-  
-              </tr>
-            </tbody>
-            @if(last) { 
-              <h1>Nombre : {{nbr}}</h1>}
+            </td>
+            <td>{{ hotel.nomHotel }}</td>
+            <td>{{ hotel.villeHotel }}</td>
+            <td>{{ hotel.prixNuit }}</td>
+            <td class="text-center">{{ hotel.etoiles }}</td>
+            <td>{{ hotel.nomType }}</td>
+
+            @if (authService.isAdmin()) {
+            <td>
+              <button class="btn btn-danger btn-sm me-1" (click)="supprimerHotel(hotel)">
+                Supprimer
+              </button>
+              <a class="btn btn-warning btn-sm" [routerLink]="['/updatehotel', hotel.idHotel]">
+                Editer
+              </a>
+            </td>
+            }
+          </tr>
           }
-        @empty {
-            <h1>Aucun hotel trouvé !</h1> }
+        </tbody>
       </table>
+      <div class="text-end"><strong>Total : {{ hotelsList.length }} hôtels</strong></div>
+      } @else {
+      <div class="text-center">
+        <h5>Aucun hôtel trouvé !</h5>
+      </div>
+      }
+      }
+
     </div>
   </div>
 </div>

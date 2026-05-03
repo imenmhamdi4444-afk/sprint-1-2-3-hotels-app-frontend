@@ -15,16 +15,13 @@ export class App {
   title = 'HotelManagementApp';
   constructor( public authService: Auth, private router: Router ) {}
 
-  ngOnInit () {
-let isloggedin: string;
-let loggedUser:string;
-isloggedin = localStorage.getItem('isloggedIn') !;
-loggedUser = localStorage.getItem('loggedUser') !;
-if (isloggedin!="true" || !loggedUser)
-this.router.navigate(['/login']);
-else
-this.authService.setLoggedUserFromLocalStorage(loggedUser);
-}
+  ngOnInit() {
+    this.authService.loadToken();
+    if (this.authService.getToken() == null || this.authService.isTokenExpired()) {
+      this.router.navigate(['/login']);
+    }
+  }
+
 
 
   onLogout(){

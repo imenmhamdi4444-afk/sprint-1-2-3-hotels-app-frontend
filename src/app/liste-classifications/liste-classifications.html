@@ -1,31 +1,47 @@
-<div class="container">
-    <div class="card shadow mb-4">
-        <div class="card-body">
-
-            <div class="col-sm-4 col-md-4 col-lg-4 mb-4"> 
-                <app-update-classification  
-                                    [classification]="updatedClassification"  
-                                    (classificationUpdated)="classificationUpdated($event)"
-                                    [ajout]="ajout" >
-                </app-update-classification>                    
-               
-          </div>
-            <table class="table table-striped">
-                <thead>
-                    <tr> <th>Id</th><th>Nom Classification</th> </tr>
-                </thead>
-             
-             @for(classification of classifications; track classification.idClass)
-               {
-                <tbody >
-                    <tr>
-                        <td>{{classification.idClass}}</td>
-                        <td>{{classification.nomClass}}</td>
-                        <td><a class="btn btn-success"  (click)="updateClassification(classification)">Editer</a></td>
-                     </tr>
-                </tbody>
-               }
-            </table>
-        </div>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-5">
+      <app-update-classification [classification]="updatedType" [ajout]="ajout" (classificationUpdated)="typeUpdated($event)">
+      </app-update-classification>
     </div>
+    <div class="col-md-7">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Liste des Classifications</h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (type of typeHotels; track type.idType) {
+                <tr>
+                  <td>{{ type.idType }}</td>
+                  <td>{{ type.nomType }}</td>
+                  <td>{{ type.descriptionType }}</td>
+                  <td class="text-center">
+                    <button class="btn btn-outline-warning btn-sm" (click)="updateType(type)">
+                      Modifier
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          @if (typeHotels.length === 0) {
+            <div class="text-center text-muted p-4">
+              Aucune classification trouvée.
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+

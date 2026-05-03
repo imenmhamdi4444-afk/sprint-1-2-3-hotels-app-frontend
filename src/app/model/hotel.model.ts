@@ -1,14 +1,13 @@
-import { Classification } from "./classification.model";
+import { TypeHotel } from './typeHotel.model';
 
-export class hotel {
-    idhotel?: number;
-    nomhotel?: string;
-    ville?: string;
-    prixnuit?: number;
+export class Hotel {
+    idHotel?: number;
+    nomHotel?: string;
+    villeHotel?: string;
+    prixNuit?: number;
     etoiles?: number;
-    email?: string;
-    classification?: Classification;
-
-
- 
+    nomType?: string;       // flat string returned by HotelDTO (for display)
+    idType?: number;        // for sending type when creating/updating
+    typeHotel?: TypeHotel;  // used by add-hotel & update-hotel components
+    imageName? : string;
 }

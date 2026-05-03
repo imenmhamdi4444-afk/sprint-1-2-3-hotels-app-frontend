@@ -1,31 +1,34 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Classification } from '../model/classification.model';
+import { TypeHotel } from '../model/typeHotel.model';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+
 
 @Component({
   selector: 'app-update-classification',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
+
   templateUrl: './update-classification.html',
   styles: ``
 })
 export class UpdateClassification implements OnInit {
 
   @Input()
-  classification!: Classification;
+  classification!: TypeHotel;
 
   @Output()
-  classificationUpdated = new EventEmitter<Classification>();
+  classificationUpdated = new EventEmitter<TypeHotel>();
 
   @Input()
   ajout!: boolean;
 
   ngOnInit(): void {
-    console.log('ngOnInit du composant UpdateClassification', this.classification);
+    console.log('UpdateClassification init', this.classification);
   }
 
   saveClassification() {
     this.classificationUpdated.emit(this.classification);
   }
-
 }

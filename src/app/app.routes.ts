@@ -8,10 +8,12 @@ import { Login } from './login/login';
 import { Forbidden } from './forbidden/forbidden';
 import { hotelGuard } from './hotel-guard';
 import { ListeClassifications } from './liste-classifications/liste-classifications';
+import { RegisterComponent } from './register/register';
+import { VerifEmailComponent } from './verif-email/verif-email';
 
 export const routes: Routes = [
     {path: "hotels", component : hotels},
-    {path: "add-hotel", component : Addhotel , canActivate: [hotelGuard]},
+    {path: "add-hotel", component : Addhotel},
     {path: "", redirectTo: "hotels", pathMatch: "full"},
     {path: "rechercheParClassification", component : RechercheParClassification},
     {path: "rechercheParNom", component : RechercheParNomComponent},
@@ -19,5 +21,7 @@ export const routes: Routes = [
     {path:  'login', component: Login},
     {path: 'app-forbidden', component: Forbidden},
     {path: 'liste-classifications', component: ListeClassifications},
+    {path: 'register', component: RegisterComponent},
+    {path: 'verifEmail', component: VerifEmailComponent},
 
 ];

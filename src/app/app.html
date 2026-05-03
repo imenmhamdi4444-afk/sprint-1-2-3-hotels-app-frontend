@@ -20,9 +20,9 @@
             <li><a class="dropdown-item" routerLink="/add-hotel">Ajouter</a></li>
             }
             <li><a class="dropdown-item" routerLink="/hotels">Lister</a></li>
-            <li><a class="dropdown-item" routerLink="/rechercheParClassification">Rechercher par classification</a></li>
+            <li><a class="dropdown-item" routerLink="/rechercheParClassification">Rechercher par type</a></li>
             <li><a class="dropdown-item" routerLink="/rechercheParNom">Rechercher par nom</a></li>
-            <li><a class="dropdown-item" routerLink="/liste-classifications">Lister les classifications</a></li>
+            <li><a class="dropdown-item" routerLink="/liste-classifications">Lister les types</a></li>
           </ul>
         </li>
       </ul>
@@ -35,7 +35,8 @@
       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
  
       @if(!authService.isloggedIn){
-          <li><a class="dropdown-item"routerLink="/login">Login</a></li>
+          <li><a class="dropdown-item" routerLink="/login">Login</a></li>
+          <li><a class="dropdown-item" routerLink="/register">Register</a></li>
         }
       @else {
           <li><a class="dropdown-item" (click) = "onLogout()">Logout</a></li>

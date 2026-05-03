@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Classification } from '../model/classification.model';
-import { hotelService } from '../services/hotel';
+import { TypeHotel } from '../model/typeHotel.model';
+import { HotelService } from '../services/hotel';
 import { CommonModule } from '@angular/common';
 import { UpdateClassification } from '../update-classification/update-classification';
 
@@ -12,38 +12,37 @@ import { UpdateClassification } from '../update-classification/update-classifica
   styles: ``
 })
 export class ListeClassifications implements OnInit {
-  classifications!: Classification[];
-  updatedClassification: Classification = { "idClass": 0, "nomClass": "" };
-
+  typeHotels: TypeHotel[] = [];
+  updatedType: TypeHotel = { idType: 0, nomType: '', descriptionType: '' };
   ajout: boolean = true;
 
-  constructor(private hotelService: hotelService) { }
+  constructor(private hotelService: HotelService) {}
 
   ngOnInit(): void {
-    this.hotelService.listeClassifications().
-      subscribe(classifications => {
-        this.classifications = classifications;
-        console.log(classifications);
-      });
+    this.chargerTypes();
   }
 
-  classificationUpdated(classification: Classification) {
-    console.log("Classification updated event", classification);
-    this.hotelService.ajouterClassification(classification).
-      subscribe(() => this.chargerClassifications());
+  chargerTypes(): void {
+    this.hotelService.getAllTypeHotels().subscribe({
+      next: (types) => {
+        this.typeHotels = types._embedded.typeHotels;
+      },
+      error: (err) => {
+        console.error('Erreur chargement types:', err);
+      }
+    });
   }
 
-  chargerClassifications() {
-    this.hotelService.listeClassifications().
-      subscribe(classifications => {
-        this.classifications = classifications;
-        console.log(classifications);
-      });
+  typeUpdated(type: TypeHotel): void {
+    this.hotelService.ajouterType(type).subscribe({
+      next: () => {
+        this.chargerTypes();
+      }
+    });
   }
 
-  updateClassification(classification: Classification) {
-    this.updatedClassification = classification;
+  updateType(type: TypeHotel): void {
+    this.updatedType = type;
     this.ajout = false;
   }
-
 }

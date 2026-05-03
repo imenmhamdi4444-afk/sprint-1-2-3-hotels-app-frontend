@@ -1,38 +1,54 @@
 import { Component, OnInit } from '@angular/core';
-import { hotel } from '../model/hotel.model';
+import { Hotel } from '../model/hotel.model';
 import { CommonModule } from '@angular/common';
-import { hotelService } from '../services/hotel';
-import { RouterLink } from '@angular/router';
+import { HotelService } from '../services/hotel';
+import { RouterLink, RouterModule } from '@angular/router';
 import { Auth } from '../services/auth';
+import { SearchFilterPipe } from '../search-filter-pipe';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-hotels',
-  standalone: true, 
-  imports: [CommonModule,RouterLink],
+  standalone: true,
+  imports: [CommonModule, RouterLink, RouterModule, FormsModule],
   templateUrl: './hotels.html',
-
 })
-export class hotels implements OnInit{
-   
-   hotels: hotel[]; 
+export class hotels implements OnInit {
 
-   constructor(private hotelService: hotelService  , public authService: Auth) { 
-  
-    this.hotels = hotelService.listehotels();
-   } 
- 
-  supprimerhotel(l: hotel) { 
-    
-    let conf = confirm("Etes-vous sûr ?"); 
-    if (conf) 
-    {
-      this.hotelService.supprimerhotel(l);
-      // refresh local list from service so UI updates
-      this.hotels = this.hotelService.listehotels();
-    }
+  hotelsList: Hotel[] = [];
+  searchTerm: string = '';
+  loadError: string | null = null;
+  isLoading = true;
+
+  constructor(private hotelService: HotelService, public authService: Auth) { }
+
+  ngOnInit() {
+    this.loadHotels();
   }
 
-ngOnInit(){
+  loadHotels() {
+    this.isLoading = true;
+    this.loadError = null;
 
-}
+    this.hotelService.getAllHotels().subscribe({
+      next: (data) => {
+        this.hotelsList = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement hotels:', err);
+        this.loadError = 'Impossible de charger les hôtels. Le serveur est-il démarré ?';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  supprimerHotel(hotel: Hotel) {
+    if (confirm('Etes-vous sûr de vouloir supprimer cet hôtel ?') && hotel.idHotel) {
+      this.hotelService.supprimerHotel(hotel.idHotel).subscribe({
+        next: () => this.loadHotels(),
+        error: (err) => console.error('Erreur suppression:', err)
+      });
+    }
+  }
 }

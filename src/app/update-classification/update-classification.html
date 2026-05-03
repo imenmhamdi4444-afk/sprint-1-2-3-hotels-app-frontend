@@ -1,15 +1,33 @@
-<form>
-  <div [hidden]="ajout">
-    <label>ID Classification</label>
-    <input type="text" [(ngModel)]="classification.idClass" name="idClassification" class="form-control w-25">
+<div class="card shadow mb-4">
+  <div class="card-header" [ngClass]="ajout ? 'bg-success' : 'bg-warning'">
+    <h5 class="mb-0 text-white">{{ ajout ? 'Ajouter une Classification' : 'Modifier la Classification' }}</h5>
   </div>
+  <div class="card-body">
+    <form>
+      <div class="mb-3" [hidden]="ajout">
+        <label class="form-label fw-bold">ID Type</label>
+        <input type="text" [(ngModel)]="classification.idType" name="idType" class="form-control" readonly>
+      </div>
 
-  <div>
-    <label>Nom Classification</label>
-    <input type="text" [(ngModel)]="classification.nomClass" name="nomClassification" class="form-control" placeholder="Entrez un nom de classification...">
-  </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Nom Type</label>
+        <input type="text" [(ngModel)]="classification.nomType" name="nomType" 
+               class="form-control" placeholder="Ex: Boutique, Resort...">
+      </div>
 
-  <div class="mt-2">
-    <button type="button" class="btn btn-success" (click)="saveClassification()">{{ ajout ? 'Ajouter' : 'Modifier' }}</button>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Description</label>
+        <textarea [(ngModel)]="classification.descriptionType" name="descriptionType" 
+                  class="form-control" rows="3" placeholder="Description courte..."></textarea>
+      </div>
+
+      <div class="d-grid">
+        <button type="button" class="btn" [ngClass]="ajout ? 'btn-success' : 'btn-warning'" 
+                (click)="saveClassification()">
+          {{ ajout ? 'Valider l\'ajout' : 'Enregistrer les modifications' }}
+        </button>
+      </div>
+    </form>
   </div>
-</form>
+</div>
+

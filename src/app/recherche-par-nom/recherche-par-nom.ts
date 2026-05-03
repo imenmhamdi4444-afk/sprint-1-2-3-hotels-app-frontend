@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { hotel } from '../model/hotel.model';
-import { hotelService } from '../services/hotel';
-import { Classification } from '../model/classification.model';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Hotel } from '../model/hotel.model';
+import { HotelService } from '../services/hotel';
+import { Auth } from '../services/auth';
 
 @Component({
   selector: 'app-recherche-par-nom',
@@ -14,52 +14,67 @@ import { RouterModule } from '@angular/router';
 })
 export class RechercheParNomComponent implements OnInit {
 
-  hotels: hotel[] = [];        // Liste filtrée à afficher
-  allHotels: hotel[] = [];     // Toutes les données
-  classifications: Classification[] = [];
+  hotels: Hotel[] = [];
+  allHotels: Hotel[] = [];
   searchKeyword: string = '';
-  selectedClassification: number | null = null;
 
-  constructor(private hotelService: hotelService) {}
+  constructor(private hotelService: HotelService, private authService: Auth) {}
 
   ngOnInit(): void {
-    // Charger les classifications
-    this.classifications = this.hotelService.listeclassifications();
-
-    // Charger tous les hôtels
-    this.allHotels = this.hotelService.listehotels();
-
-    // Ne rien afficher au départ
-    this.hotels = [];
+    // Load all hotels from Spring Boot
+    this.hotelService.getAllHotels().subscribe({
+      next: (data) => {
+        this.allHotels = data;
+      },
+      error: (err) => {
+        console.error('Erreur chargement hotels:', err);
+      }
+    });
   }
 
   filterHotels(): void {
     const keyword = this.searchKeyword.trim().toLowerCase();
-
-    if (!keyword && !this.selectedClassification) {
-      // Si rien n'est saisi, ne rien afficher
-      this.hotels = [];
+    if (!keyword) {
+      this.hotels = this.allHotels;
       return;
     }
-
-    // Filtrage par nom et éventuellement classification
-    this.hotels = this.allHotels.filter(h => {
-      const matchesName = keyword
-        ? h.nomhotel?.toLowerCase().includes(keyword) ?? false
-        : true;
-
-      const matchesClass = this.selectedClassification
-        ? h.classification?.idClass === this.selectedClassification
-        : true;
-
-      return matchesName && matchesClass;
-    });
+    // Filter locally by name (keyup event)
+    this.hotels = this.allHotels.filter(h =>
+      h.nomHotel?.toLowerCase().includes(keyword)
+    );
   }
 
-  supprimerhotel(h: hotel): void {
-    if (confirm("Etes-vous sûr de vouloir supprimer cet hôtel ?")) {
-      this.hotelService.supprimerhotel(h);
-      this.filterHotels(); // mettre à jour la liste
+  rechercherProds(): void {
+    const keyword = this.searchKeyword.trim();
+    if (keyword) {
+      this.hotelService.rechercherParNom(keyword).subscribe({
+        next: (data) => {
+          this.hotels = data;
+        },
+        error: (err) => {
+          console.error('Erreur recherche par API:', err);
+        }
+      });
+    } else {
+      this.hotels = this.allHotels;
+    }
+  }
+
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin() as boolean;
+  }
+
+  supprimerHotel(h: Hotel): void {
+    if (confirm('Etes-vous sûr ?') && h.idHotel) {
+      this.hotelService.supprimerHotel(h.idHotel).subscribe({
+        next: () => {
+          this.filterHotels();
+        },
+        error: (err) => {
+          console.error('Erreur suppression:', err);
+        }
+      });
     }
   }
 }

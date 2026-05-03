@@ -1,59 +1,83 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { hotel } from '../model/hotel.model';
-import { hotelService } from '../services/hotel';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Classification } from '../model/classification.model';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Hotel } from '../model/hotel.model';
+import { HotelService } from '../services/hotel';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TypeHotel } from '../model/typeHotel.model';
 
 @Component({
   selector: 'app-update-hotel',
-  standalone: true, 
-  imports: [FormsModule, CommonModule, ReactiveFormsModule],
+  standalone: true,
+imports: [FormsModule, CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './update-hotel.html',
   styles: ``
 })
 export class Updatehotel implements OnInit {
-  currentHotel = new hotel(); 
-  classificationsList!: Classification[];
-  updatedClassId!: number;
-  hotelForm!: FormGroup; 
+  currentHotel = new Hotel();
+  typeHotelsList: TypeHotel[] = [];
+  hotelForm!: FormGroup;
+  uploadedImage!: File;
+  imagePath: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private router: Router, 
-    private hotelService: hotelService,
+    private router: Router,
+    private hotelService: HotelService,
     private formBuilder: FormBuilder
-  ) { } 
+  ) {}
 
   ngOnInit(): void {
-    this.classificationsList = this.hotelService.listeclassifications();
-    
-    // Récupérer l'hôtel avec vérification
-    const hotelId = +this.activatedRoute.snapshot.params['id'];
-    const foundHotel = this.hotelService.consulterhotel(hotelId);
-    
-    if (foundHotel) {
-      this.currentHotel = foundHotel;
-      // defensive read: use optional chaining and a default (0) so updatedClassId is always a number
-      this.updatedClassId = this.currentHotel.classification?.idClass ?? 0;
+    this.hotelForm = this.formBuilder.group({
+      idHotel: [null],
+      nomHotel: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
+      prixNuit: ['', [Validators.required, Validators.min(10), Validators.max(5000)]],
+      etoiles: ['', [Validators.required, Validators.min(1), Validators.max(7)]],
+      villeHotel: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(20)]],
+      idType: [null]
+    });
 
-      this.hotelForm = this.formBuilder.group({  
-        idhotel: [this.currentHotel.idhotel, [Validators.required]],
-        nomhotel: [this.currentHotel.nomhotel, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]],
-        prixnuit: [this.currentHotel.prixnuit, [Validators.required, Validators.min(10), Validators.max(2000)]],
-        etoiles: [this.currentHotel.etoiles, [Validators.required, Validators.min(1), Validators.max(5)]],
-        ville: [this.currentHotel.ville, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]],
-        email: [this.currentHotel.email, [Validators.required, Validators.email]],
-        idClass: [this.updatedClassId, [Validators.required]], 
-      });
-    } else {
-      this.router.navigate(['hotels']);
-    }
+
+    // Load types from Spring Boot API
+    this.hotelService.getAllTypeHotels().subscribe({
+      next: (data) => {
+        this.typeHotelsList = data._embedded.typeHotels;
+      },
+      error: (err) => {
+        console.error('Erreur chargement types:', err);
+      }
+    });
+
+
+    // Get hotel id from URL
+    const hotelId = +this.activatedRoute.snapshot.params['id'];
+
+    // Load hotel from Spring Boot API
+    this.hotelService.getHotelById(hotelId).subscribe({
+      next: (hotel) => {
+        this.currentHotel = hotel;
+        this.hotelForm.patchValue({
+          idHotel: hotel.idHotel,
+          nomHotel: hotel.nomHotel,
+          prixNuit: hotel.prixNuit,
+          etoiles: hotel.etoiles,
+          villeHotel: hotel.villeHotel,
+          idType: hotel.typeHotel?.idType
+        });
+
+      },
+      error: (err) => {
+        console.error('Erreur chargement hotel:', err);
+        this.router.navigate(['hotels']);
+      }
+    });
   }
-  
-  updatehotel(): void { 
+
+  onImageUpload(event: any) {
+    this.uploadedImage = event.target.files[0];
+  }
+
+  updateHotel(): void {
     if (this.hotelForm.invalid) {
       Object.keys(this.hotelForm.controls).forEach(key => {
         this.hotelForm.get(key)?.markAsTouched();
@@ -61,35 +85,29 @@ export class Updatehotel implements OnInit {
       return;
     }
 
-    // read form values and update currentHotel fields before saving
     const formValues = this.hotelForm.value;
-    console.log('[Updatehotel] formValues:', formValues);
-
-    // Update primitive fields
-    this.currentHotel.nomhotel = formValues.nomhotel;
-    this.currentHotel.prixnuit = formValues.prixnuit;
+    this.currentHotel.nomHotel = formValues.nomHotel;
+    this.currentHotel.prixNuit = formValues.prixNuit;
     this.currentHotel.etoiles = formValues.etoiles;
-    this.currentHotel.ville = formValues.ville;
-    this.currentHotel.email = formValues.email;
+    this.currentHotel.villeHotel = formValues.villeHotel;
+    this.currentHotel.typeHotel = this.typeHotelsList.find(t => t.idType == formValues.idType);
 
-    // determine classification from selected id (convert to number)
-    const selectedClassId = Number(formValues.idClass) || Number(this.updatedClassId) || 0;
-    if (!selectedClassId) {
-      console.warn('[Updatehotel] no classification selected');
-      return;
-    }
 
-    const classification = this.hotelService.consulterClassification(selectedClassId);
-    if (!classification) {
-      console.warn('[Updatehotel] classification not found for id', selectedClassId);
-      return;
-    }
-
-    this.currentHotel.classification = classification;
-
-    console.log('[Updatehotel] currentHotel before update:', JSON.parse(JSON.stringify(this.currentHotel)));
-    console.log('[Updatehotel] saving currentHotel:', JSON.parse(JSON.stringify(this.currentHotel)));
-    this.hotelService.updatehotel(this.currentHotel);
-    this.router.navigate(['hotels']);
+    // Call Spring Boot PUT /hotels/api/hotels
+    this.hotelService.updateHotel(this.currentHotel).subscribe({
+      next: (h) => {
+        if (this.uploadedImage) {
+          this.hotelService.uploadImage(this.uploadedImage, this.currentHotel.idHotel!).subscribe({
+            next: () => this.router.navigate(['hotels']),
+            error: (err) => console.error(err)
+          });
+        } else {
+          this.router.navigate(['hotels']);
+        }
+      },
+      error: (err) => {
+        console.error('Erreur mise à jour hotel:', err);
+      }
+    });
   }
 }
