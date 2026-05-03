@@ -1,9 +1,17 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-cd C:\Users\hp\Desktop\Devoir3-Angular-hotel
-=======
-# atelier6-angular
->>>>>>> cf1f7aa7def9ab087e1df21aea1bdecc624a9f67
-=======
-# atelier9-angular
->>>>>>> 330972f0cc8947ce912d80f902c605e7b9c373a7
+# Sprint 1-2-3: Hotels App Frontend
+
+This repository contains the frontend implementation for the Hotels Management application, covering Sprints 1, 2, and 3.
+
+## 🚀 Features Implemented
+- **Sprint 1 & 2**: Basic CRUD for Hotels and Classifications, Search by Name and Classification.
+- **Sprint 3**: Manual JWT Authentication, User Registration, and Email Verification logic.
+
+## 🛠️ Technology Stack
+- **Framework**: Angular 18+
+- **Styling**: Bootstrap 5
+- **Security**: JWT (Custom Implementation)
+
+## 🏃 How to run
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm start` (Make sure the backend is running)
